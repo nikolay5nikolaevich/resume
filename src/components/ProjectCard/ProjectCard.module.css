@@ -1,0 +1,166 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   ProjectCard
+   Карточка проекта — одна большая ссылка с hover-эффектом.
+
+   Hover (только pointer-устройства, @media hover:hover):
+     1. scale(1.04) + shadow-md на всю карточку
+     2. object-position скриншота едет от 0% (верх) до 100% (низ) за ~5s linear
+        → при уходе курсора быстрый возврат к верху (~0.6s ease-out)
+
+   @media (hover: none)   — статичная карточка, тап ведёт на сайт
+   @media (prefers-reduced-motion: reduce) — все transitions отключены
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Карточка-ссылка ── */
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+
+  /* Плавный scale + тень */
+  transform: scale(1);
+  transform-origin: center;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease);
+
+  /* GPU-слой для плавного scale без перерисовки соседей */
+  will-change: transform;
+}
+
+/* Видимый focus-стиль для клавиатурной навигации */
+.card:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* ── Hover: scale + тень — только на pointer-устройствах ── */
+@media (hover: hover) {
+  .card:hover {
+    transform: scale(1.025);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* ── Область превью ── */
+.preview {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: var(--color-border);
+  /* Не скруглять снизу — карточка уже скруглена, overflow:hidden на .card
+     закроет нижние углы; верхние скругляем здесь, чтобы изображение не
+     «вылезало» за радиус при hover scale. */
+  flex-shrink: 0;
+}
+
+/* ── Скриншот: «первый экран» сайта, анимируемый к «последнему» на hover ── */
+.screenshot {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  /*
+    В покое — показываем верх (первый экран сайта):
+    object-position: 50% 0%
+
+    Переход: при возврате курсора быстрый (~0.6s) возврат к верху.
+    На hover (ниже) длительность меняется на 5s linear — прокрутка вниз.
+  */
+  object-position: 50% 0%;
+  transition: object-position 0.6s var(--ease);
+
+  display: block;
+  /* Предотвращаем артефакт «щели» снизу у inline-элементов */
+}
+
+/* Hover-прокрутка — только на pointer-устройствах */
+@media (hover: hover) {
+  .card:hover .screenshot {
+    object-position: 50% 100%;
+    transition-duration: 5s;
+    transition-timing-function: linear;
+  }
+}
+
+/* ── Текстовый блок ── */
+.body {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+/* ── Заголовок ── */
+.title {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.25;
+}
+
+/* ── Описание ── */
+.description {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
+/* ── Список тегов ── */
+.tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  /* Прижимаем теги к низу карточки, чтобы карточки одинаковой высоты
+     сохраняли выравнивание тегов по нижней границе */
+  margin-top: auto;
+}
+
+/* ── Один тег (чип) ── */
+.tag {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   prefers-reduced-motion: отключаем все переходы и анимации
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .screenshot {
+    transition: none;
+    object-position: 50% 0%;
+  }
+
+  /* hover-правило из @media(hover:hover) выше тоже перезаписывается,
+     но явно указываем статичный object-position для надёжности */
+  .card:hover .screenshot {
+    object-position: 50% 0%;
+  }
+}

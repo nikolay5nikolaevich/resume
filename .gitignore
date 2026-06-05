@@ -1,0 +1,9 @@
+node_modules
+dist
+*.local
+.DS_Store
+
+# Локальные служебные файлы — не для публичного репозитория
+CLAUDE.md
+docs/
+.claude/

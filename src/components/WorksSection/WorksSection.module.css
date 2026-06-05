@@ -1,0 +1,160 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   WorksSection
+   Секция с сеткой карточек проектов.
+
+   Адаптивная сетка: на десктопе — repeat(var(--cols), 1fr),
+   на планшете (≤1024px) — 2 колонки, на мобайле (≤640px) — 1 колонка.
+
+   Reveal: секция проявляется через IntersectionObserver (fade + translateY).
+   Приглушение: соседние карточки тускнеют при hover на сетку.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Секция-обёртка ── */
+.section {
+  padding-block: var(--space-24);
+}
+
+/* ── Утилита-контейнер (дублирует global .container через токены) ── */
+.inner {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+/* ── Шапка секции ── */
+.header {
+  margin-bottom: var(--space-12);
+  /* Reveal: начальное состояние */
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease);
+}
+
+.header.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Надзаголовок (eyebrow) ── */
+.eyebrow {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-3);
+}
+
+/* ── Основной заголовок h2 ── */
+.title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+
+/* ── Вводный абзац ── */
+.lead {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  max-width: 56ch;
+}
+
+/* ── Сетка карточек ── */
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-8);
+  /* Количество колонок задаётся через inline CSS-переменную из пропа */
+  grid-template-columns: repeat(var(--cols, 3), 1fr);
+}
+
+/* ── Адаптив: планшет ── */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+/* ── Адаптив: мобайл ── */
+@media (max-width: 640px) {
+  .section {
+    padding-block: var(--space-16);
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .title {
+    font-size: var(--text-2xl);
+  }
+}
+
+/* ── Ячейка-обёртка карточки ── */
+.cell {
+  /* flex: карточка растягивается на всю высоту ячейки */
+  display: flex;
+  flex-direction: column;
+
+  /* Reveal: начальное состояние; stagger задаётся через inline style={{ transitionDelay }} */
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease);
+}
+
+.cell.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Карточка внутри .cell занимает всю высоту ячейки */
+.cell > * {
+  flex: 1;
+  height: 100%;
+}
+
+/* ── Приглушение соседних карточек при hover ── */
+/* Только на pointer-устройствах и только для уже видимых ячеек */
+@media (hover: hover) {
+  .grid:hover .cell.visible:not(:hover) {
+    opacity: 0.55;
+    transition: opacity var(--dur-base) var(--ease);
+  }
+
+  /* Активная (hovered) карточка — полная яркость */
+  .grid:hover .cell.visible:hover {
+    opacity: 1;
+    transition: opacity var(--dur-base) var(--ease);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   prefers-reduced-motion: контент сразу виден, без transform
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .cell {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* Убираем приглушение — оно внутри hover:hover, но явно страхуемся */
+  .grid:hover .cell.visible:not(:hover) {
+    opacity: 1;
+    transition: none;
+  }
+}

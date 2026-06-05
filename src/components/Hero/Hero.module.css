@@ -1,0 +1,148 @@
+.hero {
+  padding-block: var(--space-24);
+  /* Анимация появления: начальное состояние */
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease);
+}
+
+/* Конечное состояние при inView */
+.hero.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* prefers-reduced-motion: убираем анимацию */
+@media (prefers-reduced-motion: reduce) {
+  .hero {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+/* Мобилка: одна колонка, фото снизу */
+@media (max-width: 768px) {
+  .inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+  }
+
+  .photo {
+    order: 2;
+  }
+
+  .text {
+    order: 1;
+  }
+}
+
+/* ─── Текстовый блок ────────────────────────────────── */
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.eyebrow {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: var(--text-hero);
+  font-weight: 680;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--color-text);
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: var(--text-4xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: var(--text-3xl);
+  }
+}
+
+.subtitle {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  max-width: 56ch;
+}
+
+/* ─── CTA ────────────────────────────────────────────── */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  padding: var(--space-3) var(--space-6);
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
+  font-size: var(--text-base);
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+  margin-top: var(--space-2);
+}
+
+.cta:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.cta:active {
+  transform: translateY(1px);
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.ctaIcon {
+  flex-shrink: 0;
+}
+
+/* ─── Фото ───────────────────────────────────────────── */
+.photo {
+  display: flex;
+  justify-content: center;
+}
+
+.photoImg {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+  .photoImg {
+    max-width: 280px;
+  }
+}
