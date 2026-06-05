@@ -10,7 +10,7 @@ export function Footer() {
         <p className={styles.copy}>
           © {year} {profile.name}
         </p>
-        <p className={styles.made}>Сделано на React + Vite</p>
+        
       </div>
     </footer>
   );
